@@ -18,7 +18,7 @@ export const NavBar = ()=>{
                         <Button 
                             size="mini" 
                             primary 
-                            onClick={()=> router.push("/task/new")}
+                            onClick={()=> router.push("/tasks/new")}
                         >
                             New Task
                         </Button>
