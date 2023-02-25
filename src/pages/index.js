@@ -1,9 +1,11 @@
 
 import {Button, Card, Container, Grid} from 'semantic-ui-react'
 import Link from 'next/Link'
-import {router} from 'next/router'
+import {useRouter} from 'next/router'
 
 export default function Home({tasks = []}) {
+
+  const router = useRouter()
 
   if(tasks.length === 0 ){
     return (

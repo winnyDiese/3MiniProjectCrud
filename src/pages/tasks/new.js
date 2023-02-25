@@ -10,10 +10,19 @@ const CreateTask = ()=>{
     })
 
     const {title, description} = newTask
-    const {push} = useRouter()
+    const {push, query} = useRouter()
     const [isSubmit, setIsSubmit] = useState(false)
     const [errors, setErrors] = useState({})
 
+    const getTask = async ()=>{
+        const response = await fetch(`http://localhost:3000/api/tasks/${query.id}`)
+        const data = await response.json()
+        setNewTask({title: data.title, description: data.description})
+    }
+
+    useEffect(()=>{
+        if(query.id) getTask()
+    }, [query.id])
 
     const validate = ()=>{
         let errors = {}
@@ -32,8 +41,27 @@ const CreateTask = ()=>{
 
         if(Object.keys(errors).length) return setErrors(errors)
         setIsSubmit(true)
-        await createTask()
+        if(query.id){
+            await updateTask()
+        }else{
+            await createTask()
+        }
         await push("/")
+    }
+
+    
+    const updateTask = async ()=>{
+        try {
+            await fetch(`http://localhost:3000/api/tasks/${query.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify(newTask)
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const createTask = async ()=>{
@@ -61,7 +89,7 @@ const CreateTask = ()=>{
             <Grid.Row>
                 <Grid.Column textAlign="center">
                     <div>
-                        <h1>Create Task</h1>
+                        <h1>{query.id ? "Update task" : "Create task"}</h1>
                         <div>
                             {isSubmit ? (<Loader active inline="centered" />) : (
                                 <Form onSubmit={handleSubmit}>
@@ -87,7 +115,7 @@ const CreateTask = ()=>{
                                         value={description}
                                     />
                                     <Button type="submit" primary>
-                                        Submit
+                                        {query.id ? "Update" : "Submit"}
                                     </Button>
                                 </Form>
                             )}
